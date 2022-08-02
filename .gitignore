@@ -24,3 +24,5 @@ yarn-debug.log*
 yarn-error.log*
 Dockerfile.dev
 Dockerfile.prod
+docker-compose-dev.yml
+docker-compose-prod.yml
