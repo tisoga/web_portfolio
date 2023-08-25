@@ -37,13 +37,13 @@ const Portfolio = () => {
 
     useEffect(() => {
         const forceProject = searchParams.get('project')
-        if (forceProject.toLowerCase() === 'frontend') {
+        if (forceProject?.toLowerCase() === 'frontend') {
             setMenu('Frontend')
         }
-        else if (forceProject.toLowerCase() === 'backend') {
+        else if (forceProject?.toLowerCase() === 'backend') {
             setMenu('Backend')
         }
-        else if (forceProject.toLowerCase() === 'other') {
+        else if (forceProject?.toLowerCase() === 'other') {
             setMenu('Other')
         }
     }, [])
