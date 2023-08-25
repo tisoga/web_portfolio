@@ -17,6 +17,7 @@ function App() {
     const forceLang = searchParams.get('lang')
     visitorCounter(setErrorStatus)
     db.collection('settings-data').doc('lang-selected').get().then((doc) => {
+      // console.log(doc.data())
       dispatch(getDataLang(doc.data()))
     })
       .catch((e) => {
@@ -56,13 +57,15 @@ function App() {
       .catch((e) => {
         console.log(setErrorStatus(true))
       })
-    db.collection('skill-list').get().then((qs) => {
+    db.collection('skill-list').orderBy('order','asc').get().then((qs) => {
       const allSkill = []
       qs.forEach((doc) => {
-        allSkill.push({
-          id: doc.id,
-          ...doc.data()
-        })
+        if (!doc.data().isDisabled) {
+          allSkill.push({
+            id: doc.id,
+            ...doc.data()
+          })
+        }
       })
       dispatch(getSkillList(allSkill))
     })

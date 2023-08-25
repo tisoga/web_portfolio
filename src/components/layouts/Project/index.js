@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FaPython, FaMobileAlt, FaGlobe } from 'react-icons/fa';
+import { useSearchParams } from 'react-router-dom';
+import { FaRegFolder, FaDesktop, FaServer } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTransition, animated } from 'react-spring';
 import { selectProject, setVisibleModal } from '../../redux/actions/Project';
@@ -11,12 +12,13 @@ import Modal from './Modal';
 import clickedModalCounter from '../../functions/clickedModalCounter';
 
 const Portfolio = () => {
+    const [searchParams] = useSearchParams()
     const [items, setItems] = useState([])
     const [text, setText] = useState(textEng)
     const [langID, setLangID] = useState('ID')
     const [title, setTitle] = useState('')
-    const [selectedMenu, setMenu] = useState('Web')
-    const [selectedIcon, setIcon] = useState('Web')
+    const [selectedMenu, setMenu] = useState('Frontend')
+    const [selectedIcon, setIcon] = useState('Frontend')
     const isModalVisible = useSelector(state => state.ProjectReducer.isVisibleModal)
     const defaultLang = useSelector(state => state.MainReducer.portfolioSettings.defaultLang)
     const langSelected = useSelector(state => state.MenuBarReducer.langSelected)
@@ -32,6 +34,19 @@ const Portfolio = () => {
             await next({ x: 0, y: 0, opacity: 0 })
         },
     })
+
+    useEffect(() => {
+        const forceProject = searchParams.get('project')
+        if (forceProject.toLowerCase() === 'frontend') {
+            setMenu('Frontend')
+        }
+        else if (forceProject.toLowerCase() === 'backend') {
+            setMenu('Backend')
+        }
+        else if (forceProject.toLowerCase() === 'other') {
+            setMenu('Other')
+        }
+    }, [])
 
     useEffect(() => {
         // console.log('Change')
@@ -85,7 +100,7 @@ const Portfolio = () => {
             setItems(filteredContent)
         }, 1000)
         // eslint-disable-next-line
-    }, [selectedMenu ,projectList])
+    }, [selectedMenu, projectList])
 
 
     const changeCategoryBtn = (val) => {
@@ -100,14 +115,14 @@ const Portfolio = () => {
     }
 
     const Icon = ({ className }) => {
-        if (selectedIcon === 'Web') {
-            return <FaGlobe className={className} />
+        if (selectedIcon === 'Frontend') {
+            return <FaDesktop className={className} />
         }
-        else if (selectedIcon === 'Mobile') {
-            return <FaMobileAlt className={className} />
+        else if (selectedIcon === 'Backend') {
+            return <FaServer className={className} />
         }
         else {
-            return <FaPython className={className} />
+            return <FaRegFolder className={className} />
         }
     }
 
@@ -124,19 +139,19 @@ const Portfolio = () => {
                 {/* <p className='text-5xl text-center text-baby-powder'>My <span class="text-red-500">Project</span></p> */}
                 <hr className='my-3' />
                 <div className='grid grid-rows-2 lg:flex lg:flex-row justify-around'>
-                    <button className={'border px-10 py-2 rounded-lg bg-green-pantone text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [selectedMenu === 'Web' && 'bg-blue-800']}
+                    <button className={'border px-10 py-2 rounded-lg bg-green-pantone text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [selectedMenu === 'Frontend' && 'bg-blue-800']}
                         onClick={() => {
-                            changeCategoryBtn('Web')
+                            changeCategoryBtn('Frontend')
                         }}
-                    >Web</button>
-                    <button className={'border px-10 py-2 bg-green-pantone rounded-lg text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [selectedMenu === 'Mobile' && 'bg-blue-800']}
+                    >Frontend</button>
+                    <button className={'border px-10 py-2 bg-green-pantone rounded-lg text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [selectedMenu === 'Backend' && 'bg-blue-800']}
                         onClick={() => {
-                            changeCategoryBtn('Mobile')
+                            changeCategoryBtn('Backend')
                         }}
-                    >Mobile</button>
-                    <button className={'border px-10 py-2 bg-green-pantone rounded-lg text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [selectedMenu === 'Python' && 'bg-blue-800']}
-                        onClick={() => changeCategoryBtn('Python')}
-                    >Python</button>
+                    >Backend</button>
+                    <button className={'border px-10 py-2 bg-green-pantone rounded-lg text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [selectedMenu === 'Other' && 'bg-blue-800']}
+                        onClick={() => changeCategoryBtn('Other')}
+                    >Other</button>
                 </div>
                 <hr className='my-3' />
                 <div className='flex flex-row flex-wrap mt-4 justify-around'>
