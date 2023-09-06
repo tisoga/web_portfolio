@@ -1,9 +1,11 @@
+import { doc, getDoc, runTransaction } from 'firebase/firestore';
 import db from "../config/firebase"
 
 const clickedModalCounter = (id) => {
-    const docRef = db.collection('portfolio-data').doc(id)
-    db.runTransaction((transaction) => {
-        return transaction.get(docRef).then((doc) => {
+    // const docRef = db.collection('portfolio-data').doc(id)
+    const docRef = doc(db, 'portfolio-data', id);
+    return runTransaction(db, (transaction) => {
+        return getDoc(docRef).then((doc) => {
             if (!doc.exists) {
                 throw new Error("Document does not exist!")
             }

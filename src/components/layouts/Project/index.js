@@ -19,11 +19,13 @@ const Portfolio = () => {
     const [title, setTitle] = useState('')
     const [selectedMenu, setMenu] = useState('Frontend')
     const [selectedIcon, setIcon] = useState('Frontend')
+    const [category2, setCategory2] = useState('web')
     const isModalVisible = useSelector(state => state.ProjectReducer.isVisibleModal)
     const defaultLang = useSelector(state => state.MainReducer.portfolioSettings.defaultLang)
     const langSelected = useSelector(state => state.MenuBarReducer.langSelected)
     const projectList = useSelector(state => state.MainReducer.portfolioData)
     const dispatch = useDispatch()
+    const forceProject = searchParams.get('project')
 
     const transition = useTransition(items, {
         from: { x: -150, y: 200, opacity: 0 },
@@ -36,7 +38,6 @@ const Portfolio = () => {
     })
 
     useEffect(() => {
-        const forceProject = searchParams.get('project')
         if (forceProject?.toLowerCase() === 'frontend') {
             setMenu('Frontend')
         }
@@ -46,7 +47,7 @@ const Portfolio = () => {
         else if (forceProject?.toLowerCase() === 'other') {
             setMenu('Other')
         }
-    }, [])
+    }, [forceProject])
 
     useEffect(() => {
         // console.log('Change')
@@ -88,7 +89,21 @@ const Portfolio = () => {
             projectList.forEach((item) => {
                 if (item.category === selectedMenu.toLowerCase()) {
                     delayCount += 200
-                    dataList.push({ ...item, delay: delayCount })
+                    if (selectedMenu.toLowerCase() === 'frontend') {
+                        if (category2 === 'mobile') {
+                            if (item.translation[defaultLang].projectName.toLowerCase().includes('mobile')) {
+                                dataList.push({ ...item, delay: delayCount })
+                            }
+                        }
+                        else {
+                            if (!item.translation[defaultLang].projectName.toLowerCase().includes('mobile')) {
+                                dataList.push({ ...item, delay: delayCount })
+                            }
+                        }
+                    }
+                    else {
+                        dataList.push({ ...item, delay: delayCount })
+                    }
                 }
             })
             return dataList
@@ -100,12 +115,17 @@ const Portfolio = () => {
             setItems(filteredContent)
         }, 1000)
         // eslint-disable-next-line
-    }, [selectedMenu, projectList])
+    }, [selectedMenu, projectList, category2])
 
 
     const changeCategoryBtn = (val) => {
         setItems([])
         setMenu(val)
+    }
+
+    const changeCategory2Btn = (val) => {
+        setItems([])
+        setCategory2(val)
     }
 
     const setModalVisible = (project) => {
@@ -154,17 +174,31 @@ const Portfolio = () => {
                     >Other</button>
                 </div>
                 <hr className='my-3' />
-                <div className='flex flex-row flex-wrap mt-4 justify-around'>
-                    {transition((style, item) =>
-                        item.translation[defaultLang]
-                            ?
-                            <animated.div style={style} className='flex justify-center items-center border h-48 w-72 mb-4 bg-forest-green-web border-red-700 rounded-md hover:bg-green-pantone hover:text-black transition delay-100 duration-700 relative cursor-pointer text-white'
-                                onClick={() => setModalVisible(item)}>
-                                <Icon className={'absolute left-0 top-0 w-full h-full text-white fill-current opacity-30'} />
-                                <p className='text-2xl text-center absolute'>{item.translation[langID]?.projectName ?? item.translation[defaultLang].projectName}</p>
-                            </animated.div>
-                            : ''
-                    )}
+                <div className='flex flex-row md:flex-col flex-wrap mt-4 justify-around'>
+                    {selectedMenu === 'Frontend' &&
+                        <div className='flex flex-col md:flex-row flex-1 justify-around'>
+                            <>
+                                <button className={'border px-10 py-2 bg-green-pantone rounded-lg text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [category2 === 'web' && 'bg-blue-800']}
+                                    onClick={() => changeCategory2Btn('web')}
+                                >Web</button>
+                                <button className={'border px-10 py-2 bg-green-pantone rounded-lg text-white hover:bg-blue-800 shadow-xl my-1 lg:my-0 ' + [category2 === 'mobile' && 'bg-blue-800']}
+                                    onClick={() => changeCategory2Btn('mobile')}
+                                >Mobile</button>
+                            </>
+                        </div>
+                    }
+                    <div className='flex flex-row flex-wrap mt-4 justify-around'>
+                        {transition((style, item) =>
+                            item.translation[defaultLang]
+                                ?
+                                <animated.div style={style} className='flex justify-center items-center border h-48 w-72 mb-4 bg-forest-green-web border-red-700 rounded-md hover:bg-green-pantone hover:text-black transition delay-100 duration-700 relative cursor-pointer text-white'
+                                    onClick={() => setModalVisible(item)}>
+                                    <Icon className={'absolute left-0 top-0 w-full h-full text-white fill-current opacity-30'} />
+                                    <p className='text-2xl text-center absolute'>{item.translation[langID]?.projectName ?? item.translation[defaultLang].projectName}</p>
+                                </animated.div>
+                                : ''
+                        )}
+                    </div>
                 </div>
             </div>
             {isModalVisible &&
